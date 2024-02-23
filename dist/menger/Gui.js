@@ -1,5 +1,5 @@
 import { Camera } from "../lib/webglutils/Camera.js";
-import { Vec3 } from "../lib/TSM.js";
+import { Vec3, Vec4 } from "../lib/TSM.js";
 /**
  * Handles Mouse and Button events along with
  * the the camera.
@@ -66,6 +66,36 @@ export class GUI {
      */
     drag(mouse) {
         // TODO: Your code here for left and right mouse drag
+        //left click
+        if (mouse.buttons == 1) {
+            console.log("here in left click");
+            const x = mouse.screenX - this.prevX;
+            const y = mouse.screenY - this.prevY;
+            this.prevX = mouse.screenX;
+            this.prevY = mouse.screenY;
+            const screenX = -2 * x / this.width;
+            const screenY = 2 * y / this.height;
+            const projInverse = this.projMatrix().inverse();
+            const viewMatrix = this.camera.viewMatrix().transpose();
+            const screen = new Vec4([screenX, screenY, 0, 0]);
+            const world = viewMatrix.multiplyVec4(projInverse.multiplyVec4(screen));
+            const world_vec = new Vec3([world[0], world[1], world[2]]);
+            const look = this.camera.forward().negate();
+            const rotation_axis = Vec3.cross(world_vec, look);
+            this.camera.rotate(rotation_axis, GUI.rotationSpeed);
+        }
+        if (mouse.buttons == 2) {
+            const y = mouse.screenY - this.prevY;
+            if (y == 0) {
+                return;
+            }
+            else if (y > 0) {
+                this.camera.offsetDist(GUI.zoomSpeed);
+            }
+            else {
+                this.camera.offsetDist(-GUI.zoomSpeed);
+            }
+        }
     }
     /**
      * Callback function for the end of a drag event
@@ -91,42 +121,55 @@ export class GUI {
         // TOOD: Your code for key handling
         switch (key.code) {
             case "KeyW": {
+                this.camera.offsetDist(-GUI.zoomSpeed);
                 break;
             }
             case "KeyA": {
+                this.camera.offset(this.camera.right(), -GUI.panSpeed, true);
                 break;
             }
             case "KeyS": {
+                this.camera.offsetDist(GUI.zoomSpeed);
                 break;
             }
             case "KeyD": {
+                this.camera.offset(this.camera.right(), GUI.panSpeed, true);
                 break;
             }
             case "KeyR": {
+                this.reset();
                 break;
             }
             case "ArrowLeft": {
+                this.camera.roll(GUI.rollSpeed, false);
                 break;
             }
             case "ArrowRight": {
+                this.camera.roll(GUI.rollSpeed, true);
                 break;
             }
             case "ArrowUp": {
+                this.camera.offset(this.camera.up(), GUI.panSpeed, true);
                 break;
             }
             case "ArrowDown": {
+                this.camera.offset(this.camera.up(), -GUI.panSpeed, true);
                 break;
             }
             case "Digit1": {
+                this.sponge.setLevel(1);
                 break;
             }
             case "Digit2": {
+                this.sponge.setLevel(2);
                 break;
             }
             case "Digit3": {
+                this.sponge.setLevel(3);
                 break;
             }
             case "Digit4": {
+                this.sponge.setLevel(4);
                 break;
             }
             default: {
