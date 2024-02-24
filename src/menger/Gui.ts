@@ -130,28 +130,30 @@ export class GUI implements IGUI {
 	  
 	  // TODO: Your code here for left and right mouse drag
     //left click
-    if(mouse.buttons == 1) {
-      console.log("here in left click");
-      const x:number = mouse.screenX - this.prevX;
-      const y:number = mouse.screenY - this.prevY; 
-      this.prevX = mouse.screenX;
-      this.prevY = mouse.screenY;
+    //if(mouse.buttons == 1) {
+      //if(this.dragging && mouse.buttons == 1){
+        if (this.dragging && mouse.buttons == 1) {
+          const x = mouse.screenX - this.prevX;
+          const y = mouse.screenY - this.prevY;
+          this.prevX = mouse.screenX;
+          this.prevY = mouse.screenY;
+          if(x == 0 || y == 0) return;
 
-      const screenX = -2 * x / this.width;
-      const screenY = 2 * y / this.height;
-
-      const projInverse = this.projMatrix().inverse();
-      const viewMatrix = this.camera.viewMatrix().transpose();
-
-      const screen:Vec4 = new Vec4([screenX,screenY, 0, 0]);
-      const world:Vec4 = viewMatrix.multiplyVec4(projInverse.multiplyVec4(screen));
-
-      const world_vec:Vec3 = new Vec3([world[0], world[1] ,world[2]]);
-      const look:Vec3 = this.camera.forward().negate();
-      const rotation_axis:Vec3 = Vec3.cross(world_vec, look);
-
-      this.camera.rotate(rotation_axis, GUI.rotationSpeed);
-    }
+          const screenX = -2 * x / this.width;
+          const screenY = 2 * y / this.height;
+    
+          var screen_coords:Vec4 = new Vec4([screenX, screenY, 0, 0]);
+          var world_coords:Vec4 = this.camera.viewMatrix().transpose().multiplyVec4(this.projMatrix().inverse().multiplyVec4(screen_coords));
+    
+          var world_vec:Vec3 = new Vec3([world_coords.x, world_coords.y, world_coords.z]);
+          var look_vec:Vec3 = this.camera.forward().negate();
+          var rotation_axis:Vec3 = Vec3.cross(world_vec, look_vec);
+    
+          this.camera.rotate(rotation_axis, GUI.rotationSpeed);
+        }
+      //}
+      
+    //}
 
     if(mouse.buttons == 2){
       const y = mouse.screenY - this.prevY;
