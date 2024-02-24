@@ -45,36 +45,68 @@ class Cube {
  
   private gen_triangles(): void{
     //three points, 3 dimensions per point = 9 numbers / triangle
+
+    //front face
+
     let triangle_front_left = new Float32Array(9);
-    //bottome left
+    //bottome left point
     triangle_front_left[0] = this.min_corner[0];
     triangle_front_left[1] = this.min_corner[1];
     triangle_front_left[2] = this.min_corner[2];
-    //up
+    //up point
     triangle_front_left[3] = this.min_corner[0];
     triangle_front_left[4] = this.min_corner[1] + this.length;
     triangle_front_left[5] = this.min_corner[2];
-    //up right
+    //up right point
     triangle_front_left[6] = this.min_corner[0] + this.length;
     triangle_front_left[7] = this.min_corner[1] + this.length;
     triangle_front_left[8] = this.min_corner[2];
+    this.triangles.push(triangle_front_left);
 
     let triangle_front_right = new Float32Array(9);
-    //bottom left
+    //bottom left point
     triangle_front_right[0] = triangle_front_left[0];
     triangle_front_right[1] = triangle_front_left[1];
     triangle_front_right[2] = triangle_front_left[2];
-    //up right
+    //up right point
     triangle_front_right[3] = triangle_front_left[6];
     triangle_front_right[4] = triangle_front_left[7];
     triangle_front_right[5] = triangle_front_left[8];
-    //right
+    //right point
     triangle_front_right[6] = triangle_front_right[0] + this.length;
     triangle_front_right[7] = triangle_front_right[1]
     triangle_front_right[8] = triangle_front_right[2];
-
-    this.triangles.push(triangle_front_left);
     this.triangles.push(triangle_front_right);
+
+    //right face
+
+    let triangle_right_left = new Float32Array(9);
+    //bottom left point
+    triangle_right_left[0] = this.min_corner[0] + this.length;
+    triangle_right_left[1] = this.min_corner[1];
+    triangle_right_left[2] = this.min_corner[2];
+    //up point
+    triangle_right_left[3] = triangle_right_left[0];
+    triangle_right_left[4] = triangle_right_left[1] + this.length;
+    triangle_right_left[5] = triangle_right_left[2];
+    //up right point
+    triangle_right_left[6] = triangle_right_left[3];
+    triangle_right_left[7] = triangle_right_left[4];
+    triangle_right_left[8] = triangle_right_left[5] + this.length;
+    this.triangles.push(triangle_front_left);
+
+    let triangle_right_right = new Float32Array(9);
+    //bottom left point
+    triangle_right_right[0] = triangle_right_left[0];
+    triangle_right_right[1] = triangle_right_left[1];
+    triangle_right_right[2] = triangle_right_left[2];
+    //up right point
+    triangle_right_right[3] = triangle_right_left[6];
+    triangle_right_right[4] = triangle_right_left[7];
+    triangle_right_right[5] = triangle_right_left[8];
+    //right point
+    
+
   }
 
   flatten_vertices(): Float32Array{
