@@ -239,17 +239,17 @@ export class MengerAnimation extends CanvasAnimation {
       );
       gl.enableVertexAttribArray(this.mengerPosAttribLoc);
 
-      gl.bindBuffer(gl.ARRAY_BUFFER, this.mengerNormBuffer);
-      gl.bufferData(gl.ARRAY_BUFFER, this.sponge.normalsFlat(), gl.STATIC_DRAW);
-      gl.vertexAttribPointer(
-        this.mengerNormAttribLoc,
-        4,
-        gl.FLOAT,
-        false,
-        4 * Float32Array.BYTES_PER_ELEMENT,
-        0
-      );
-      gl.enableVertexAttribArray(this.mengerNormAttribLoc);
+      // gl.bindBuffer(gl.ARRAY_BUFFER, this.mengerNormBuffer);
+      // gl.bufferData(gl.ARRAY_BUFFER, this.sponge.normalsFlat(), gl.STATIC_DRAW);
+      // gl.vertexAttribPointer(
+      //   this.mengerNormAttribLoc,
+      //   4,
+      //   gl.FLOAT,
+      //   false,
+      //   4 * Float32Array.BYTES_PER_ELEMENT,
+      //   0
+      // );
+      // gl.enableVertexAttribArray(this.mengerNormAttribLoc);
 
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.mengerIndexBuffer);
       gl.bufferData(
@@ -278,7 +278,7 @@ export class MengerAnimation extends CanvasAnimation {
       new Float32Array(this.gui.projMatrix().all())
     );
 	
-	console.log("Drawing ", this.sponge.indicesFlat().length, " triangles");
+	// console.log("Drawing ", this.sponge.indicesFlat().length, " triangles");
 
 
     /* Draw menger */

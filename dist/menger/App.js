@@ -123,10 +123,17 @@ export class MengerAnimation extends CanvasAnimation {
             gl.bufferData(gl.ARRAY_BUFFER, this.sponge.positionsFlat(), gl.STATIC_DRAW);
             gl.vertexAttribPointer(this.mengerPosAttribLoc, 4, gl.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, 0);
             gl.enableVertexAttribArray(this.mengerPosAttribLoc);
-            gl.bindBuffer(gl.ARRAY_BUFFER, this.mengerNormBuffer);
-            gl.bufferData(gl.ARRAY_BUFFER, this.sponge.normalsFlat(), gl.STATIC_DRAW);
-            gl.vertexAttribPointer(this.mengerNormAttribLoc, 4, gl.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, 0);
-            gl.enableVertexAttribArray(this.mengerNormAttribLoc);
+            // gl.bindBuffer(gl.ARRAY_BUFFER, this.mengerNormBuffer);
+            // gl.bufferData(gl.ARRAY_BUFFER, this.sponge.normalsFlat(), gl.STATIC_DRAW);
+            // gl.vertexAttribPointer(
+            //   this.mengerNormAttribLoc,
+            //   4,
+            //   gl.FLOAT,
+            //   false,
+            //   4 * Float32Array.BYTES_PER_ELEMENT,
+            //   0
+            // );
+            // gl.enableVertexAttribArray(this.mengerNormAttribLoc);
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.mengerIndexBuffer);
             gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.sponge.indicesFlat(), gl.STATIC_DRAW);
             this.sponge.setClean();
@@ -135,7 +142,7 @@ export class MengerAnimation extends CanvasAnimation {
         gl.uniformMatrix4fv(this.mengerWorldUniformLocation, false, new Float32Array(modelMatrix.all()));
         gl.uniformMatrix4fv(this.mengerViewUniformLocation, false, new Float32Array(this.gui.viewMatrix().all()));
         gl.uniformMatrix4fv(this.mengerProjUniformLocation, false, new Float32Array(this.gui.projMatrix().all()));
-        console.log("Drawing ", this.sponge.indicesFlat().length, " triangles");
+        // console.log("Drawing ", this.sponge.indicesFlat().length, " triangles");
         /* Draw menger */
         gl.drawElements(gl.TRIANGLES, this.sponge.indicesFlat().length, gl.UNSIGNED_INT, 0);
         // TODO: draw the floor

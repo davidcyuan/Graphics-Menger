@@ -336,7 +336,12 @@ export class MengerSponge implements IMengerSponge {
   public normalsFlat(): Float32Array {
 	  // TODO: right now this makes a single triangle. Make the cube fractal instead.
     //not used right now
-	  return new Float32Array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]);
+    var flattened_normals: number[] = [];
+    for(var a: number = 0; a<2880;a++){
+      flattened_normals.push(0.0);
+    }
+    console.log("normalsFlat: " + flattened_normals.length);
+	  return new Float32Array(flattened_normals);
   }
 
   /**

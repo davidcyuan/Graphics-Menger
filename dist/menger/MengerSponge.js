@@ -262,7 +262,12 @@ export class MengerSponge {
     normalsFlat() {
         // TODO: right now this makes a single triangle. Make the cube fractal instead.
         //not used right now
-        return new Float32Array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]);
+        var flattened_normals = [];
+        for (var a = 0; a < 2880; a++) {
+            flattened_normals.push(0.0);
+        }
+        console.log("normalsFlat: " + flattened_normals.length);
+        return new Float32Array(flattened_normals);
     }
     /**
      * Returns the model matrix of the sponge
