@@ -17,37 +17,93 @@ class Cube {
             this.gen_children();
             this.has_children = true;
         }
+        this.dirty = true;
+    }
+    is_dirty() {
+        return this.dirty;
+    }
+    set_clean() {
+        this.dirty = false;
+    }
+    //local x/y are vectors mimicking x/y in square
+    gen_square(bottom_left_corner, local_x, local_y) {
+        //2 triangles, 3 points each, 3 dimensions each, 2x3x3
+        var square = [];
+        // 3 points, 3 dimensions each, 3x3
+        var triangle_left = [];
+        var bottom_corner = [bottom_left_corner[0], bottom_left_corner[1], bottom_left_corner[2]];
+        var top_corner = [bottom_corner[0] + local_y[0], bottom_corner[1] + local_y[1], bottom_corner[2] + local_y[2]];
+        var top_right_corner = [top_corner[0] + local_x[0], top_corner[1] + local_x[1], top_corner[2] + local_x[2]];
+        triangle_left[0] = bottom_corner;
+        triangle_left[1] = top_corner;
+        triangle_left[2] = top_right_corner;
+        var triangle_right = [];
+        var right_bottom_corner = bottom_corner;
+        var right_top_right_corner = top_right_corner;
+        var right_right_corner = [right_bottom_corner[0] + local_x[0], right_bottom_corner[1] + local_x[1], right_bottom_corner[2] + local_x[2]];
+        triangle_right[0] = right_bottom_corner;
+        triangle_right[1] = right_top_right_corner;
+        triangle_right[2] = right_right_corner;
+        square[0] = triangle_left;
+        square[1] = triangle_right;
+        return square;
+    }
+    //turn [3xpoint][3xdimension] => [9xnumbers]
+    flatten_triangle(triangle) {
+        var flat_triangle = [];
+        for (var point = 0; point < 3; point++) {
+            flat_triangle[point * 3] = triangle[point][0];
+            flat_triangle[point * 3 + 1] = triangle[point][1];
+            flat_triangle[point * 3 + 2] = triangle[point][2];
+        }
+        return flat_triangle;
+    }
+    push_square(square) {
+        var flat_left_triangle = this.flatten_triangle(square[0]);
+        this.triangles.push(flat_left_triangle);
+        var flat_right_triangle = this.flatten_triangle(square[1]);
+        this.triangles.push(flat_right_triangle);
     }
     gen_triangles() {
         //three points, 3 dimensions per point = 9 numbers / triangle
-        let triangle_front_left = new Float32Array(9);
-        //bottome left
-        triangle_front_left[0] = this.min_corner[0];
-        triangle_front_left[1] = this.min_corner[1];
-        triangle_front_left[2] = this.min_corner[2];
-        //up
-        triangle_front_left[3] = this.min_corner[0];
-        triangle_front_left[4] = this.min_corner[1] + this.length;
-        triangle_front_left[5] = this.min_corner[2];
-        //up right
-        triangle_front_left[6] = this.min_corner[0] + this.length;
-        triangle_front_left[7] = this.min_corner[1] + this.length;
-        triangle_front_left[8] = this.min_corner[2];
-        let triangle_front_right = new Float32Array(9);
-        //bottom left
-        triangle_front_right[0] = triangle_front_left[0];
-        triangle_front_right[1] = triangle_front_left[1];
-        triangle_front_right[2] = triangle_front_left[2];
-        //up right
-        triangle_front_right[3] = triangle_front_left[6];
-        triangle_front_right[4] = triangle_front_left[7];
-        triangle_front_right[5] = triangle_front_left[8];
-        //right
-        triangle_front_right[6] = triangle_front_right[0] + this.length;
-        triangle_front_right[7] = triangle_front_right[1];
-        triangle_front_right[8] = triangle_front_right[2];
-        this.triangles.push(triangle_front_left);
-        this.triangles.push(triangle_front_right);
+        //here, [x][y][z]. with children, [z][x][y]
+        //front face, starting corner is [0][0][0]
+        var front_local_x = [this.length, 0, 0];
+        var front_local_y = [0, this.length, 0];
+        var front_bottom_left_corner = [this.min_corner[0], this.min_corner[1], this.min_corner[2]];
+        var front_square = this.gen_square(front_bottom_left_corner, front_local_x, front_local_y);
+        // var front_normal: number[] = [0, 0, -]
+        this.push_square(front_square);
+        //right face, starting corner is [1][0][0]
+        var right_local_x = [0, 0, this.length];
+        var right_local_y = [0, this.length, 0];
+        var right_bottom_left_corner = [this.min_corner[0] + this.length, this.min_corner[1], this.min_corner[2]];
+        var right_square = this.gen_square(right_bottom_left_corner, right_local_x, right_local_y);
+        this.push_square(right_square);
+        //left face, starting corner [0][0][1]
+        var left_local_x = [0, 0, -1 * this.length];
+        var left_local_y = [0, this.length, 0];
+        var left_bottom_left_corner = [this.min_corner[0], this.min_corner[1], this.min_corner[2] + this.length];
+        var left_square = this.gen_square(left_bottom_left_corner, left_local_x, left_local_y);
+        this.push_square(left_square);
+        //top face, starting corner [0][1][1]
+        var top_local_x = [0, 0, -1 * this.length];
+        var top_local_y = [this.length, 0, 0];
+        var top_bottom_left_corner = [this.min_corner[0], this.min_corner[1] + this.length, this.min_corner[2] + this.length];
+        var top_square = this.gen_square(top_bottom_left_corner, top_local_x, top_local_y);
+        this.push_square(top_square);
+        //bottom face, starting corner [0][0][0]
+        var bottom_local_x = [0, 0, this.length];
+        var bottom_local_y = [this.length, 0, 0];
+        var bottom_bottom_left_corner = [this.min_corner[0], this.min_corner[1], this.min_corner[2]];
+        var bottom_square = this.gen_square(bottom_bottom_left_corner, bottom_local_x, bottom_local_y);
+        this.push_square(bottom_square);
+        //back face, starting corner [0][1][1]
+        var back_local_x = [this.length, 0, 0];
+        var back_local_y = [0, -1 * this.length, 0];
+        var back_bottom_left_corner = [this.min_corner[0], this.min_corner[1] + this.length, this.min_corner[2] + this.length];
+        var back_square = this.gen_square(back_bottom_left_corner, back_local_x, back_local_y);
+        this.push_square(back_square);
     }
     flatten_vertices() {
         var flattened_vertices = [];
@@ -71,10 +127,10 @@ class Cube {
                 for (var x = 0; x < 3; x++) {
                     for (var y = 0; y < 3; y++) {
                         //skipping non-z's for now
-                        if (z != 0) { }
+                        if (z != 0 && false) { }
                         else {
                             //center, so don't render
-                            if (x == 1 && y == 1) { }
+                            if (x == 1 && y == 1 || x == 1 && z == 1 || y == 1 && z == 1) { }
                             else {
                                 var child_flatten_vertices = this.children[z][x][y].flatten_vertices();
                                 for (var num of child_flatten_vertices) {
@@ -106,13 +162,13 @@ class Cube {
                 for (var x = 0; x < 3; x++) {
                     for (var y = 0; y < 3; y++) {
                         //skipping non-z's for now
-                        if (z != 0) { }
+                        if (z != 0 && false) { }
                         else {
                             //center, so don't render
-                            if (x == 1 && y == 1) { }
+                            if (x == 1 && y == 1 || x == 1 && z == 1 || y == 1 && z == 1) { }
                             else {
-                                var child_flatten_vertices = this.children[z][x][y].flatten_vertices();
-                                for (var num of child_flatten_vertices) {
+                                var child_flatten_indices = this.children[z][x][y].flatten_indices();
+                                for (var index of child_flatten_indices) {
                                     flattened_indices.push(counter);
                                     counter = counter + 1;
                                 }
@@ -140,7 +196,7 @@ class Cube {
                     child_max_corner[1] = child_min_corner[1] + child_length;
                     child_max_corner[2] = child_min_corner[2] + child_length;
                     this.children[z][x][y] = new Cube(child_min_corner, child_max_corner, this.depth - 1);
-                    this.children[z][x][y].gen_triangles();
+                    // this.children[z][x][y].gen_triangles();
                 }
             }
         }
@@ -170,16 +226,17 @@ export class MengerSponge {
         max_corn[0] = 0.5;
         max_corn[1] = 0.5;
         max_corn[2] = 0.5;
-        this.test_cube = new Cube(min_corn, max_corn, 4);
+        this.test_cube = new Cube(min_corn, max_corn, 2);
         // TODO: other initialization	
     }
     /**
      * Returns true if the sponge has changed.
      */
     isDirty() {
-        return true;
+        return this.test_cube.is_dirty();
     }
     setClean() {
+        this.test_cube.set_clean();
     }
     setLevel(level) {
         // TODO: initialize the cube
@@ -187,6 +244,7 @@ export class MengerSponge {
     /* Returns a flat Float32Array of the sponge's vertex positions */
     positionsFlat() {
         // TODO: right now this makes a single triangle. Make the cube fractal instead.
+        console.log("PositionsFlat: " + this.test_cube.flatten_vertices().length);
         return this.test_cube.flatten_vertices();
     }
     /**
@@ -195,7 +253,7 @@ export class MengerSponge {
     indicesFlat() {
         // TODO: right now this makes a single triangle. Make the cube fractal instead.
         // return new Uint32Array([0, 1, 2]);
-        console.log(this.test_cube.flatten_indices());
+        console.log("indicesFlat: " + this.test_cube.flatten_indices().length);
         return this.test_cube.flatten_indices();
     }
     /**

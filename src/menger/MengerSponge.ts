@@ -16,12 +16,18 @@ class Cube {
   min_corner: Float32Array;
   max_corner: Float32Array;
   length: number;
+  //each triangle is 9 points of data
   triangles: number[][];
+  //each normal is 9 copies of data
+  normals: number[][];
 
   //[z][x][y]
   children: Cube[][][];
   has_children: boolean;
   depth: number;
+
+  //
+  dirty: boolean;
  
   constructor(min_corn: Float32Array, max_corn: Float32Array, depth: number) {
     this.min_corner = min_corn;
@@ -41,6 +47,15 @@ class Cube {
       this.gen_children();
       this.has_children = true;
     }
+
+    this.dirty = true;
+  }
+
+  is_dirty(): boolean{
+    return this.dirty;
+  }
+  set_clean(): void{
+    this.dirty = false;
   }
  
   //local x/y are vectors mimicking x/y in square
@@ -101,6 +116,7 @@ class Cube {
     var front_local_y: number[] = [0, this.length, 0];
     var front_bottom_left_corner: number[] = [this.min_corner[0], this.min_corner[1], this.min_corner[2]];
     var front_square: number[][][] = this.gen_square(front_bottom_left_corner, front_local_x, front_local_y);
+    // var front_normal: number[] = [0, 0, -]
     this.push_square(front_square);
 
     //right face, starting corner is [1][0][0]
@@ -205,9 +221,9 @@ class Cube {
               //center, so don't render
               if(x==1&&y==1 || x==1&&z==1 || y==1&&z==1){}
               else{
-                var child_flatten_vertices: Float32Array = this.children[z][x][y].flatten_vertices();
-                for(var num of child_flatten_vertices){
-                  flattened_indices.push(counter)
+                var child_flatten_indices: Uint32Array = this.children[z][x][y].flatten_indices();
+                for(var index of child_flatten_indices){
+                  flattened_indices.push(counter);
                   counter = counter + 1;
                 }
               }
@@ -285,10 +301,11 @@ export class MengerSponge implements IMengerSponge {
    * Returns true if the sponge has changed.
    */
   public isDirty(): boolean {
-       return true;
+    return this.test_cube.is_dirty();
   }
 
   public setClean(): void {
+    this.test_cube.set_clean();
   }
   
   public setLevel(level: number)
@@ -299,6 +316,7 @@ export class MengerSponge implements IMengerSponge {
   /* Returns a flat Float32Array of the sponge's vertex positions */
   public positionsFlat(): Float32Array {
 	  // TODO: right now this makes a single triangle. Make the cube fractal instead.
+    console.log("PositionsFlat: "+this.test_cube.flatten_vertices().length);
      return this.test_cube.flatten_vertices();
   }
 
@@ -308,7 +326,7 @@ export class MengerSponge implements IMengerSponge {
   public indicesFlat(): Uint32Array {
     // TODO: right now this makes a single triangle. Make the cube fractal instead.
     // return new Uint32Array([0, 1, 2]);
-    console.log(this.test_cube.flatten_indices());
+    console.log("indicesFlat: " + this.test_cube.flatten_indices().length);
     return this.test_cube.flatten_indices();
   }
 
