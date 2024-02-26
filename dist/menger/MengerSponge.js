@@ -26,6 +26,9 @@ class Cube {
     set_clean() {
         this.dirty = false;
     }
+    set_dirty() {
+        this.dirty = true;
+    }
     //local x/y are vectors mimicking x/y in square
     gen_square(bottom_left_corner, local_x, local_y, norm) {
         //2 triangles, 3 points each, 3 dimensions each, 2x3x3
@@ -305,17 +308,16 @@ class Cube {
 export class MengerSponge {
     // TODO: sponge data structures
     constructor(level) {
+        // var min_corn = new Float32Array(3);
+        // min_corn[0] = -0.5;
+        // min_corn[1] = -0.5;
+        // min_corn[2] = -0.5;
+        // var max_corn = new Float32Array(3);
+        // max_corn[0] = 0.5;
+        // max_corn[1] = 0.5;
+        // max_corn[2] = 0.5;
+        // this.test_cube = new Cube(min_corn, max_corn, level);
         this.setLevel(level);
-        var min_corn = new Float32Array(3);
-        min_corn[0] = -0.5;
-        min_corn[1] = -0.5;
-        min_corn[2] = -0.5;
-        var max_corn = new Float32Array(3);
-        max_corn[0] = 0.5;
-        max_corn[1] = 0.5;
-        max_corn[2] = 0.5;
-        this.test_cube = new Cube(min_corn, max_corn, 4);
-        // TODO: other initialization	
     }
     /**
      * Returns true if the sponge has changed.
@@ -327,7 +329,17 @@ export class MengerSponge {
         this.test_cube.set_clean();
     }
     setLevel(level) {
-        // TODO: initialize the cube
+        this.level = level;
+        var min_corn = new Float32Array(3);
+        min_corn[0] = -0.5;
+        min_corn[1] = -0.5;
+        min_corn[2] = -0.5;
+        var max_corn = new Float32Array(3);
+        max_corn[0] = 0.5;
+        max_corn[1] = 0.5;
+        max_corn[2] = 0.5;
+        this.test_cube = new Cube(min_corn, max_corn, level);
+        this.test_cube.set_dirty();
     }
     /* Returns a flat Float32Array of the sponge's vertex positions */
     positionsFlat() {

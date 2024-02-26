@@ -39,7 +39,7 @@ export let defaultFSText = `
         float x_mag = abs(normal.x);
         float y_mag = abs(normal.y);
         float z_mag = abs(normal.z);
-        float phong_coeff = max(dot(normal, lightDir), 0.0);
+        float phong_coeff = max(dot(normalize(normal), normalize(lightDir)), 0.0);
 
         float red_weight = 0.0;
         float green_weight = 0.0;
