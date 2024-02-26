@@ -25,15 +25,37 @@ export let defaultVSText = `
     }
 `;
 // TODO: Write the fragment shader
+//           gl_Fragcolor = vec4(1.0, 0.0, 0.0, 1.0);              gl_Fragcolor = vec4(0.0, 1.0, 0.0, 1.0);     gl_Fragcolor = vec4(0.0, 0.0, 1.0, 1.0);
 export let defaultFSText = `
     precision mediump float;
 
     varying vec4 lightDir;
-    varying vec4 normal;    
+    varying vec4 normal;
 	
     
     void main () {
-        gl_FragColor = vec4(1.0, 1.0, 0.0, 1.0);
+
+        float x_mag = abs(normal.x);
+        float y_mag = abs(normal.y);
+        float z_mag = abs(normal.z);
+
+        float red_weight = 0.0;
+        float green_weight = 0.0;
+        float blue_weight = 0.0;
+
+        if(x_mag > y_mag && x_mag > z_mag){
+            red_weight = 1.0;
+        }
+        else if(y_mag > x_mag && y_mag > z_mag){
+            green_weight = 1.0;
+        }
+        else if(z_mag > x_mag && z_mag > y_mag){
+            blue_weight = 1.0;
+        }
+        else{
+            
+        }
+        gl_FragColor = vec4(red_weight * 1.0, green_weight * 1.0, blue_weight * 1.0, 1.0);
     }
 `;
 // TODO: floor shaders

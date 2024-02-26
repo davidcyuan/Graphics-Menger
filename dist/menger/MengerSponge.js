@@ -89,43 +89,69 @@ class Cube {
         var front_local_x = [this.length, 0, 0];
         var front_local_y = [0, this.length, 0];
         //norm = - local z
-        var front_norm = [0, 0. - 1 * this.length];
+        var front_norm = [0, 0, -1];
         var front_bottom_left_corner = [this.min_corner[0], this.min_corner[1], this.min_corner[2]];
         var front_square;
         var front_square_norm;
         [front_square, front_square_norm] = this.gen_square(front_bottom_left_corner, front_local_x, front_local_y, front_norm);
+        // console.log(front_square_norm);
         this.push_square(front_square);
-        this.push_square_norm(front_square);
-        // //right face, starting corner is [1][0][0]
-        // var right_local_x: number[] = [0, 0, this.length];
-        // var right_local_y: number[] = [0, this.length, 0];
-        // var right_bottom_left_corner: number[] = [this.min_corner[0] + this.length, this.min_corner[1], this.min_corner[2]];
-        // var right_square: number[][][] = this.gen_square(right_bottom_left_corner, right_local_x, right_local_y);
-        // this.push_square(right_square);
-        // //left face, starting corner [0][0][1]
-        // var left_local_x: number[] = [0, 0, -1*this.length];
-        // var left_local_y: number[] = [0, this.length, 0];
-        // var left_bottom_left_corner: number[] = [this.min_corner[0], this.min_corner[1], this.min_corner[2] + this.length];
-        // var left_square: number[][][] = this.gen_square(left_bottom_left_corner, left_local_x, left_local_y);
-        // this.push_square(left_square);
-        // //top face, starting corner [0][1][1]
-        // var top_local_x: number[] = [0, 0, -1*this.length];
-        // var top_local_y: number[] = [this.length, 0, 0];
-        // var top_bottom_left_corner: number[] = [this.min_corner[0], this.min_corner[1] + this.length, this.min_corner[2] + this.length];
-        // var top_square: number[][][] = this.gen_square(top_bottom_left_corner, top_local_x, top_local_y);
-        // this.push_square(top_square);
-        // //bottom face, starting corner [0][0][0]
-        // var bottom_local_x: number[] = [0, 0, this.length];
-        // var bottom_local_y: number[] = [this.length, 0, 0];
-        // var bottom_bottom_left_corner: number[] = [this.min_corner[0], this.min_corner[1], this.min_corner[2]];
-        // var bottom_square: number[][][] = this.gen_square(bottom_bottom_left_corner, bottom_local_x, bottom_local_y);
-        // this.push_square(bottom_square);
-        // //back face, starting corner [0][1][1]
-        // var back_local_x: number[] = [this.length, 0, 0];
-        // var back_local_y: number[] = [0, -1*this.length, 0];
-        // var back_bottom_left_corner: number[] = [this.min_corner[0], this.min_corner[1] + this.length, this.min_corner[2] + this.length];
-        // var back_square: number[][][] = this.gen_square(back_bottom_left_corner, back_local_x, back_local_y);
-        // this.push_square(back_square);
+        this.push_square_norm(front_square_norm);
+        //right face, starting corner is [1][0][0]
+        var right_local_x = [0, 0, this.length];
+        var right_local_y = [0, this.length, 0];
+        //norm = +x
+        var right_norm = [1, 0, 0];
+        var right_bottom_left_corner = [this.min_corner[0] + this.length, this.min_corner[1], this.min_corner[2]];
+        var right_square;
+        var right_square_norm;
+        [right_square, right_square_norm] = this.gen_square(right_bottom_left_corner, right_local_x, right_local_y, right_norm);
+        this.push_square(right_square);
+        this.push_square_norm(right_square_norm);
+        //left face, starting corner [0][0][1]
+        var left_local_x = [0, 0, -1 * this.length];
+        var left_local_y = [0, this.length, 0];
+        //norm = -x
+        var left_norm = [-1, 0, 0];
+        var left_bottom_left_corner = [this.min_corner[0], this.min_corner[1], this.min_corner[2] + this.length];
+        var left_square;
+        var left_square_norm;
+        [left_square, left_square_norm] = this.gen_square(left_bottom_left_corner, left_local_x, left_local_y, left_norm);
+        this.push_square(left_square);
+        this.push_square_norm(left_square_norm);
+        //top face, starting corner [0][1][1]
+        var top_local_x = [0, 0, -1 * this.length];
+        var top_local_y = [this.length, 0, 0];
+        //top norm = +y
+        var top_norm = [0, 1, 0];
+        var top_bottom_left_corner = [this.min_corner[0], this.min_corner[1] + this.length, this.min_corner[2] + this.length];
+        var top_square;
+        var top_square_norm;
+        [top_square, top_square_norm] = this.gen_square(top_bottom_left_corner, top_local_x, top_local_y, top_norm);
+        this.push_square(top_square);
+        this.push_square_norm(top_square_norm);
+        //bottom face, starting corner [0][0][0]
+        var bottom_local_x = [0, 0, this.length];
+        var bottom_local_y = [this.length, 0, 0];
+        //bottom norm = -y
+        var bottom_norm = [0, -1, 0];
+        var bottom_bottom_left_corner = [this.min_corner[0], this.min_corner[1], this.min_corner[2]];
+        var bottom_square;
+        var bottom_square_norm;
+        [bottom_square, bottom_square_norm] = this.gen_square(bottom_bottom_left_corner, bottom_local_x, bottom_local_y, bottom_norm);
+        this.push_square(bottom_square);
+        this.push_square_norm(bottom_square_norm);
+        //back face, starting corner [0][1][1]
+        var back_local_x = [this.length, 0, 0];
+        var back_local_y = [0, -1 * this.length, 0];
+        //back norm +z
+        var back_norm = [0, 0, -1];
+        var back_bottom_left_corner = [this.min_corner[0], this.min_corner[1] + this.length, this.min_corner[2] + this.length];
+        var back_square;
+        var back_square_norm;
+        [back_square, back_square_norm] = this.gen_square(back_bottom_left_corner, back_local_x, back_local_y, back_norm);
+        this.push_square(back_square);
+        this.push_square_norm(back_square);
     }
     flatten_vertices() {
         var flattened_vertices = [];
@@ -177,13 +203,14 @@ class Cube {
                     flattened_norms.push(num);
                     counter = counter + 1;
                     if (counter > 0 && counter % 3 == 0) {
-                        flattened_norms.push(0);
+                        flattened_norms.push(1);
                     }
                 }
             }
         }
         //get vertices from children
         else {
+            // console.log("should not be here");
             for (var z = 0; z < 3; z++) {
                 for (var x = 0; x < 3; x++) {
                     for (var y = 0; y < 3; y++) {
@@ -287,7 +314,7 @@ export class MengerSponge {
         max_corn[0] = 0.5;
         max_corn[1] = 0.5;
         max_corn[2] = 0.5;
-        this.test_cube = new Cube(min_corn, max_corn, 1);
+        this.test_cube = new Cube(min_corn, max_corn, 4);
         // TODO: other initialization	
     }
     /**
@@ -305,7 +332,7 @@ export class MengerSponge {
     /* Returns a flat Float32Array of the sponge's vertex positions */
     positionsFlat() {
         // TODO: right now this makes a single triangle. Make the cube fractal instead.
-        console.log("PositionsFlat: " + this.test_cube.flatten_vertices().length);
+        //  console.log("PositionsFlat: "+this.test_cube.flatten_vertices().length);
         return this.test_cube.flatten_vertices();
     }
     /**
@@ -329,7 +356,7 @@ export class MengerSponge {
         // }
         // console.log("normalsFlat: " + flattened_normals.length);
         // return new Float32Array(flattened_normals);
-        console.log("PositionsNorm: " + this.test_cube.flatten_vertices().length);
+        // console.log("PositionsNorm: "+this.test_cube.flatten_norms());
         return this.test_cube.flatten_norms();
     }
     /**
