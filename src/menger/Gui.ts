@@ -132,12 +132,26 @@ export class GUI implements IGUI {
     //left click
     //if(mouse.buttons == 1) {
       //if(this.dragging && mouse.buttons == 1){
-        if (this.dragging && mouse.buttons == 1) {
+      
+      if(mouse.buttons == 2){
+        console.log("mouse event 2");
+        const y = mouse.screenY - this.prevY;
+        if (y == 0){
+          return;
+        } else if (y > 0){
+          this.camera.offsetDist(GUI.zoomSpeed);
+        } else {
+          this.camera.offsetDist(-GUI.zoomSpeed);
+        } 
+      } 
+
+        if (mouse.buttons == 1) {
+          console.log("mouse event 1");
           const x = mouse.screenX - this.prevX;
           const y = mouse.screenY - this.prevY;
           this.prevX = mouse.screenX;
           this.prevY = mouse.screenY;
-          if(x == 0 || y == 0) return;
+          //if(x == 0 || y == 0) return;
 
           const screenX = -2 * x / this.width;
           const screenY = 2 * y / this.height;
@@ -146,7 +160,7 @@ export class GUI implements IGUI {
           var world_coords:Vec4 = this.camera.viewMatrix().transpose().multiplyVec4(this.projMatrix().inverse().multiplyVec4(screen_coords));
     
           var world_vec:Vec3 = new Vec3([world_coords.x, world_coords.y, world_coords.z]);
-          var look_vec:Vec3 = this.camera.forward();
+          var look_vec:Vec3 = this.camera.forward().negate();
           var rotation_axis:Vec3 = Vec3.cross(world_vec, look_vec);
     
           this.camera.rotate(rotation_axis, GUI.rotationSpeed);
@@ -155,16 +169,7 @@ export class GUI implements IGUI {
       
     //}
 
-    if(mouse.buttons == 2){
-      const y = mouse.screenY - this.prevY;
-      if (y == 0){
-        return;
-      } else if (y > 0){
-        this.camera.offsetDist(GUI.zoomSpeed);
-      } else {
-        this.camera.offsetDist(-GUI.zoomSpeed);
-      } 
-    }
+   
 	  
   }
 
