@@ -26,7 +26,7 @@ export let defaultVSText = `
 `;
 
 // TODO: Write the fragment shader
-//           gl_Fragcolor = vec4(1.0, 0.0, 0.0, 1.0);              gl_Fragcolor = vec4(0.0, 1.0, 0.0, 1.0);     gl_Fragcolor = vec4(0.0, 0.0, 1.0, 1.0);
+//          float phong_coeff = max(dot(normalize(normal), normalize(lightDir)), 0.0);
 export let defaultFSText = `
     precision mediump float;
 
@@ -39,7 +39,10 @@ export let defaultFSText = `
         float x_mag = abs(normal.x);
         float y_mag = abs(normal.y);
         float z_mag = abs(normal.z);
-        float phong_coeff = max(dot(normalize(normal), normalize(lightDir)), 0.0);
+        vec3 normal_3 = vec3(normal.x, normal.y, normal.z);
+        vec3 lightDir_3 = vec3(lightDir.x, lightDir.y, lightDir.z);
+        float phong_coeff = max(dot(normalize(normal_3), normalize(lightDir_3)), 0.0);
+        
 
         float red_weight = 0.0;
         float green_weight = 0.0;
