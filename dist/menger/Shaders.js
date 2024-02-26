@@ -38,6 +38,7 @@ export let defaultFSText = `
         float x_mag = abs(normal.x);
         float y_mag = abs(normal.y);
         float z_mag = abs(normal.z);
+        float phong_coeff = max(dot(normal, lightDir), 0.0);
 
         float red_weight = 0.0;
         float green_weight = 0.0;
@@ -55,7 +56,7 @@ export let defaultFSText = `
         else{
             
         }
-        gl_FragColor = vec4(red_weight * 1.0, green_weight * 1.0, blue_weight * 1.0, 1.0);
+        gl_FragColor = vec4(phong_coeff * red_weight * 1.0, phong_coeff * green_weight * 1.0, phong_coeff * blue_weight * 1.0, 1.0);
     }
 `;
 // TODO: floor shaders
