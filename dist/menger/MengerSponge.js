@@ -6,6 +6,7 @@ class Cube {
         this.max_corner = max_corn;
         this.length = max_corn[0] - min_corn[0];
         this.triangles = [];
+        this.triangles_norm = [];
         this.children = [];
         this.has_children = false;
         this.depth = depth;
@@ -26,9 +27,10 @@ class Cube {
         this.dirty = false;
     }
     //local x/y are vectors mimicking x/y in square
-    gen_square(bottom_left_corner, local_x, local_y) {
+    gen_square(bottom_left_corner, local_x, local_y, norm) {
         //2 triangles, 3 points each, 3 dimensions each, 2x3x3
         var square = [];
+        var square_normal = [];
         // 3 points, 3 dimensions each, 3x3
         var triangle_left = [];
         var bottom_corner = [bottom_left_corner[0], bottom_left_corner[1], bottom_left_corner[2]];
@@ -37,6 +39,10 @@ class Cube {
         triangle_left[0] = bottom_corner;
         triangle_left[1] = top_corner;
         triangle_left[2] = top_right_corner;
+        var triangle_left_norm = [];
+        triangle_left_norm[0] = norm;
+        triangle_left_norm[1] = norm;
+        triangle_left_norm[2] = norm;
         var triangle_right = [];
         var right_bottom_corner = bottom_corner;
         var right_top_right_corner = top_right_corner;
@@ -44,9 +50,15 @@ class Cube {
         triangle_right[0] = right_bottom_corner;
         triangle_right[1] = right_top_right_corner;
         triangle_right[2] = right_right_corner;
+        var triangle_right_norm = [];
+        triangle_right_norm[0] = norm;
+        triangle_right_norm[1] = norm;
+        triangle_right_norm[2] = norm;
         square[0] = triangle_left;
         square[1] = triangle_right;
-        return square;
+        square_normal[0] = triangle_left_norm;
+        square_normal[1] = triangle_left_norm;
+        return [square, square_normal];
     }
     //turn [3xpoint][3xdimension] => [9xnumbers]
     flatten_triangle(triangle) {
@@ -64,46 +76,56 @@ class Cube {
         var flat_right_triangle = this.flatten_triangle(square[1]);
         this.triangles.push(flat_right_triangle);
     }
+    push_square_norm(square_norm) {
+        var flat_left_triangle_norm = this.flatten_triangle(square_norm[0]);
+        this.triangles_norm.push(flat_left_triangle_norm);
+        var flat_right_triangle_norm = this.flatten_triangle(square_norm[1]);
+        this.triangles_norm.push(flat_right_triangle_norm);
+    }
     gen_triangles() {
         //three points, 3 dimensions per point = 9 numbers / triangle
         //here, [x][y][z]. with children, [z][x][y]
         //front face, starting corner is [0][0][0]
         var front_local_x = [this.length, 0, 0];
         var front_local_y = [0, this.length, 0];
+        //norm = - local z
+        var front_norm = [0, 0. - 1 * this.length];
         var front_bottom_left_corner = [this.min_corner[0], this.min_corner[1], this.min_corner[2]];
-        var front_square = this.gen_square(front_bottom_left_corner, front_local_x, front_local_y);
-        // var front_normal: number[] = [0, 0, -]
+        var front_square;
+        var front_square_norm;
+        [front_square, front_square_norm] = this.gen_square(front_bottom_left_corner, front_local_x, front_local_y, front_norm);
         this.push_square(front_square);
-        //right face, starting corner is [1][0][0]
-        var right_local_x = [0, 0, this.length];
-        var right_local_y = [0, this.length, 0];
-        var right_bottom_left_corner = [this.min_corner[0] + this.length, this.min_corner[1], this.min_corner[2]];
-        var right_square = this.gen_square(right_bottom_left_corner, right_local_x, right_local_y);
-        this.push_square(right_square);
-        //left face, starting corner [0][0][1]
-        var left_local_x = [0, 0, -1 * this.length];
-        var left_local_y = [0, this.length, 0];
-        var left_bottom_left_corner = [this.min_corner[0], this.min_corner[1], this.min_corner[2] + this.length];
-        var left_square = this.gen_square(left_bottom_left_corner, left_local_x, left_local_y);
-        this.push_square(left_square);
-        //top face, starting corner [0][1][1]
-        var top_local_x = [0, 0, -1 * this.length];
-        var top_local_y = [this.length, 0, 0];
-        var top_bottom_left_corner = [this.min_corner[0], this.min_corner[1] + this.length, this.min_corner[2] + this.length];
-        var top_square = this.gen_square(top_bottom_left_corner, top_local_x, top_local_y);
-        this.push_square(top_square);
-        //bottom face, starting corner [0][0][0]
-        var bottom_local_x = [0, 0, this.length];
-        var bottom_local_y = [this.length, 0, 0];
-        var bottom_bottom_left_corner = [this.min_corner[0], this.min_corner[1], this.min_corner[2]];
-        var bottom_square = this.gen_square(bottom_bottom_left_corner, bottom_local_x, bottom_local_y);
-        this.push_square(bottom_square);
-        //back face, starting corner [0][1][1]
-        var back_local_x = [this.length, 0, 0];
-        var back_local_y = [0, -1 * this.length, 0];
-        var back_bottom_left_corner = [this.min_corner[0], this.min_corner[1] + this.length, this.min_corner[2] + this.length];
-        var back_square = this.gen_square(back_bottom_left_corner, back_local_x, back_local_y);
-        this.push_square(back_square);
+        this.push_square_norm(front_square);
+        // //right face, starting corner is [1][0][0]
+        // var right_local_x: number[] = [0, 0, this.length];
+        // var right_local_y: number[] = [0, this.length, 0];
+        // var right_bottom_left_corner: number[] = [this.min_corner[0] + this.length, this.min_corner[1], this.min_corner[2]];
+        // var right_square: number[][][] = this.gen_square(right_bottom_left_corner, right_local_x, right_local_y);
+        // this.push_square(right_square);
+        // //left face, starting corner [0][0][1]
+        // var left_local_x: number[] = [0, 0, -1*this.length];
+        // var left_local_y: number[] = [0, this.length, 0];
+        // var left_bottom_left_corner: number[] = [this.min_corner[0], this.min_corner[1], this.min_corner[2] + this.length];
+        // var left_square: number[][][] = this.gen_square(left_bottom_left_corner, left_local_x, left_local_y);
+        // this.push_square(left_square);
+        // //top face, starting corner [0][1][1]
+        // var top_local_x: number[] = [0, 0, -1*this.length];
+        // var top_local_y: number[] = [this.length, 0, 0];
+        // var top_bottom_left_corner: number[] = [this.min_corner[0], this.min_corner[1] + this.length, this.min_corner[2] + this.length];
+        // var top_square: number[][][] = this.gen_square(top_bottom_left_corner, top_local_x, top_local_y);
+        // this.push_square(top_square);
+        // //bottom face, starting corner [0][0][0]
+        // var bottom_local_x: number[] = [0, 0, this.length];
+        // var bottom_local_y: number[] = [this.length, 0, 0];
+        // var bottom_bottom_left_corner: number[] = [this.min_corner[0], this.min_corner[1], this.min_corner[2]];
+        // var bottom_square: number[][][] = this.gen_square(bottom_bottom_left_corner, bottom_local_x, bottom_local_y);
+        // this.push_square(bottom_square);
+        // //back face, starting corner [0][1][1]
+        // var back_local_x: number[] = [this.length, 0, 0];
+        // var back_local_y: number[] = [0, -1*this.length, 0];
+        // var back_bottom_left_corner: number[] = [this.min_corner[0], this.min_corner[1] + this.length, this.min_corner[2] + this.length];
+        // var back_square: number[][][] = this.gen_square(back_bottom_left_corner, back_local_x, back_local_y);
+        // this.push_square(back_square);
     }
     flatten_vertices() {
         var flattened_vertices = [];
@@ -143,6 +165,45 @@ class Cube {
             }
         }
         return new Float32Array(flattened_vertices);
+    }
+    flatten_norms() {
+        var flattened_norms = [];
+        //return this cube's vertices
+        if (this.has_children == false) {
+            //triangle is a 9-length float32 array
+            for (var triangle of this.triangles_norm) {
+                let counter = 0;
+                for (var num of triangle) {
+                    flattened_norms.push(num);
+                    counter = counter + 1;
+                    if (counter > 0 && counter % 3 == 0) {
+                        flattened_norms.push(0);
+                    }
+                }
+            }
+        }
+        //get vertices from children
+        else {
+            for (var z = 0; z < 3; z++) {
+                for (var x = 0; x < 3; x++) {
+                    for (var y = 0; y < 3; y++) {
+                        //skipping non-z's for now
+                        if (z != 0 && false) { }
+                        else {
+                            //center, so don't render
+                            if (x == 1 && y == 1 || x == 1 && z == 1 || y == 1 && z == 1) { }
+                            else {
+                                var child_flatten_norms = this.children[z][x][y].flatten_norms();
+                                for (var num of child_flatten_norms) {
+                                    flattened_norms.push(num);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return new Float32Array(flattened_norms);
     }
     flatten_indices() {
         var flattened_indices = [];
@@ -226,7 +287,7 @@ export class MengerSponge {
         max_corn[0] = 0.5;
         max_corn[1] = 0.5;
         max_corn[2] = 0.5;
-        this.test_cube = new Cube(min_corn, max_corn, 2);
+        this.test_cube = new Cube(min_corn, max_corn, 1);
         // TODO: other initialization	
     }
     /**
@@ -253,7 +314,7 @@ export class MengerSponge {
     indicesFlat() {
         // TODO: right now this makes a single triangle. Make the cube fractal instead.
         // return new Uint32Array([0, 1, 2]);
-        console.log("indicesFlat: " + this.test_cube.flatten_indices().length);
+        // console.log("indicesFlat: " + this.test_cube.flatten_indices().length);
         return this.test_cube.flatten_indices();
     }
     /**
@@ -262,12 +323,14 @@ export class MengerSponge {
     normalsFlat() {
         // TODO: right now this makes a single triangle. Make the cube fractal instead.
         //not used right now
-        var flattened_normals = [];
-        for (var a = 0; a < 2880; a++) {
-            flattened_normals.push(0.0);
-        }
-        console.log("normalsFlat: " + flattened_normals.length);
-        return new Float32Array(flattened_normals);
+        // var flattened_normals: number[] = [];
+        // for(var a: number = 0; a<2880;a++){
+        //   flattened_normals.push(0.0);
+        // }
+        // console.log("normalsFlat: " + flattened_normals.length);
+        // return new Float32Array(flattened_normals);
+        console.log("PositionsNorm: " + this.test_cube.flatten_vertices().length);
+        return this.test_cube.flatten_norms();
     }
     /**
      * Returns the model matrix of the sponge
