@@ -267,7 +267,7 @@ class Cube {
           flattened_norms.push(num);
           counter = counter + 1;
           if(counter > 0 && counter%3 == 0){
-            flattened_norms.push(1);
+            flattened_norms.push(0);
           }
         }
       }
