@@ -146,7 +146,7 @@ export class GUI implements IGUI {
           var world_coords:Vec4 = this.camera.viewMatrix().transpose().multiplyVec4(this.projMatrix().inverse().multiplyVec4(screen_coords));
     
           var world_vec:Vec3 = new Vec3([world_coords.x, world_coords.y, world_coords.z]);
-          var look_vec:Vec3 = this.camera.forward().negate();
+          var look_vec:Vec3 = this.camera.forward();
           var rotation_axis:Vec3 = Vec3.cross(world_vec, look_vec);
     
           this.camera.rotate(rotation_axis, GUI.rotationSpeed);

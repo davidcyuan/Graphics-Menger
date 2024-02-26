@@ -66,6 +66,47 @@ export let defaultFSText = `
 
 // TODO: floor shaders
 
-export let floorVSText = ``;
-export let floorFSText = ``;
+export let floorVSText = `
+precision mediump float;
+
+attribute vec3 vertPosition;
+attribute vec4 aNorm;
+
+varying vec4 lightDir;
+varying vec4 normal;
+
+uniform vec4 lightPosition;
+uniform mat4 mWorld;
+uniform mat4 mView;
+uniform mat4 mProj;
+
+varying vec3 vert;   
+
+void main () {
+    gl_Position = mProj * mView * mWorld * vec4 (vertPosition, 1.0);
+    lightDir = lightPosition - vec4(vertPosition, 1.0);
+
+    normal = aNorm;
+    
+    vert = vertPosition;
+}
+`;
+
+export let floorFSText = `
+    precision mediump float;
+
+    varying vec4 lightDir;
+    varying vec4 normal; 
+
+    varying vec3 vert;  
+
+    void main () {
+        float square_size = 5.0;
+        bool black = (mod(floor(vert[0]/square_size) + floor(vert[2]/square_size), 2.0) == 0.0);
+        gl_FragColor = black ? vec4(0.0, 0.0, 0.0, 1.0) : vec4(1.0, 1.0, 1.0, 1.0);
+        gl_FragColor *= dot(normalize(lightDir), normal);
+        gl_FragColor.w = 1.0;
+
+    }
+`;
 
